@@ -1,4 +1,3 @@
-const answer = "APPLE";
 const keyboardColumn = document.querySelectorAll(
   ".keyboard-column, .keyboard-column-wide"
 );
@@ -39,25 +38,30 @@ function appStart() {
     index = 0;
   };
 
-  const handleEnterkey = () => {
-    let correct_count = 0;
+  const handleEnterkey = async () => {
+    let 맞은_갯수 = 0;
+
+    //서버에서 정답을 받아오는 코드
+    const 응답 = await fetch("/answer");
+    const 정답 = await 응답.json();
+
     for (let i = 0; i < 5; i++) {
       const block = document.querySelector(
         `.board-column[data-index="${attempts}${i}"]`
       );
-      const input_word = block.innerText;
-      const answer_word = answer[i];
+      const 입력한_글자 = block.innerText;
+      const 정답_글자 = 정답[i];
       const keyElement = document.querySelector(
-        `.keyboard-key[data-key="${input_word}"], .keyboard-key-long[data-key="${input_word}"]`
+        `.keyboard-key[data-key="${입력한_글자}"], .keyboard-key-long[data-key="${입력한_글자}"]`
       );
-      if (input_word === answer_word) {
-        correct_count++;
+      if (입력한_글자 === 정답_글자) {
+        맞은_갯수++;
         block.style.background = "#67B360";
         if (keyElement) {
           keyElement.style.backgroundColor = "#67B360";
           keyElement.setAttribute("correct", "");
         }
-      } else if (answer.includes(input_word)) {
+      } else if (정답.includes(입력한_글자)) {
         block.style.background = "#D6BE4E";
         if (keyElement && !keyElement.hasAttribute("correct"))
           keyElement.style.backgroundColor = "#D6BE4E";
@@ -65,7 +69,7 @@ function appStart() {
       block.style.color = "white";
     }
 
-    if (correct_count === 5) gameOver("found");
+    if (맞은_갯수 === 5) gameOver("found");
     else nextLine();
   };
 
